@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+
+  web:
+    image: eu.gcr.io/dev-dinero-cm/web:test
+    build:
+      context: DemoProject
+    ports:
+      - 3000:3000
+    environment:
+      - Database__Hostname=postgres
+      - Database__Username=postgres
+      - Database__Password=P@zzw0rd
+      - Database__Database=postgres
+
+  postgres:
+    image: postgres:13.2-alpine
+    environment:
+      - POSTGRES_PASSWORD=P@zzw0rd
