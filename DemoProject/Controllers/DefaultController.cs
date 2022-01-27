@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Net.Http;
 using Npgsql;
 
 namespace CloudRunDemo.Controllers
@@ -16,14 +18,40 @@ namespace CloudRunDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Root()
         {
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
             }
 
-            return Ok("Welcome!");
+            return Ok("Connection is OK!");
+        }
+
+        [HttpGet]
+        [Route("public")]
+        public async Task<ActionResult> Public()
+        {
+            using var client = new HttpClient();
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mvc/Application");
+
+            var result = await client.GetAsync("https://dev.test.sykonia.dk/public/");
+
+            return Ok("Public");
+        }
+
+        [HttpGet]
+        [Route("internal")]
+        public async Task<ActionResult> Internal()
+        {
+            using var client = new HttpClient();
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mvc/Application");
+
+            var result = await client.GetAsync("https://dev.test.sykonia.dk/internal/");
+
+            return Ok("Internal");
         }
 
         private string GetConnectionString()
